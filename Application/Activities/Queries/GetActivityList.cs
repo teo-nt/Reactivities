@@ -1,4 +1,6 @@
-using Domain;
+using Application.Activities.DTOs;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -7,23 +9,18 @@ namespace Application.Activities.Queries;
 
 public class GetActivityList
 {
-    public class Query : IRequest<List<Activity>>
+    public class Query : IRequest<List<ActivityDTO>>
     {
 
     }
 
-    public class Handler : IRequestHandler<Query, List<Activity>>
+    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Query, List<ActivityDTO>>
     {
-        private readonly AppDbContext _context;
-
-        public Handler(AppDbContext context)
+        public async Task<List<ActivityDTO>> Handle(Query request, CancellationToken cancellationToken)
         {
-            _context = context;
-        }
-
-        public async Task<List<Activity>> Handle(Query request, CancellationToken cancellationToken)
-        {
-            return await _context.Activities.ToListAsync(cancellationToken);
+            return await context.Activities
+                .ProjectTo<ActivityDTO>(mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
         }
     }
 }
