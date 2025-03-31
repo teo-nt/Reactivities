@@ -54,7 +54,6 @@ export default function useAccount() {
         },
         enabled: !queryClient.getQueryData(['user'])
             && location.pathname !== '/register'
-            && location.pathname !== '/login'
     })
 
     return {
