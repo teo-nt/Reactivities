@@ -17,10 +17,12 @@ export const useActivities = (id?: string) => {
         enabled: !id && location.pathname === '/activities' && !!queryClient.getQueryData(['user']),
         select: data => {
             return data.map(activity => {
+                const host = activity.attendees.find(a => a.id === activity.hostId);
                 return {
                     ...activity,
                     isHost: currentUser?.id === activity.hostId,
                     isGoing: activity.attendees.some(a => a.id === currentUser?.id),
+                    hostImageUrl: host?.imageUrl
                 }
             })
         }
@@ -72,10 +74,12 @@ export const useActivities = (id?: string) => {
         },
         enabled: !!id && !!queryClient.getQueryData(['user']),
         select: data => {
+            const host = data.attendees.find(a => a.id === data.hostId);
             return {
                 ...data,
                 isHost: currentUser?.id === data.hostId,
                 isGoing: data.attendees.some(a => a.id === currentUser?.id),
+                hostImageUrl: host?.imageUrl,
             }
         }
     })
