@@ -486,3 +486,4 @@ API/appsettings.json
 API/reactivities.db
 API/reactivities.db-wal
 API/reactivities.db-shm
+.vscode/settings.json
