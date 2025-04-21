@@ -13,6 +13,7 @@ public class AppDbContext : IdentityDbContext<User>
     public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
     public DbSet<Photo> Photos { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<UserFollowing> UserFollowings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -28,6 +29,20 @@ public class AppDbContext : IdentityDbContext<User>
             entity.HasOne(a => a.Activity)
             .WithMany(a => a.Attendees)
             .HasForeignKey(a => a.ActivityId);
+        });
+
+        builder.Entity<UserFollowing>(entity =>
+        {
+            entity.HasKey(uf => new { uf.ObserverId, uf.TargetId });
+            entity.HasOne(uf => uf.Observer)
+                .WithMany(u => u.Followings)
+                .HasForeignKey(uf => uf.ObserverId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(uf => uf.Target)
+                .WithMany(u => u.Followers)
+                .HasForeignKey(uf => uf.TargetId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
